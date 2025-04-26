@@ -3,6 +3,7 @@ import SwiftUI
 struct HomeView: View {
     @ObservedObject var viewModel: LocationViewModel
     @State private var showingFavorites = false
+    @State private var expandedCityId: String?
     
     var body: some View {
         NavigationStack {
@@ -56,18 +57,25 @@ struct HomeView: View {
 struct CityRow: View {
     let city: City
     @ObservedObject var viewModel: LocationViewModel
+    @State private var expandedCityId: String?
     
     var body: some View {
         VStack(spacing: 8) {
             // City header button
             Button {
                 if !city.locations.isEmpty {
-                    viewModel.toggleCityExpansion(city.id)
+                    withAnimation {
+                        if expandedCityId == city.id {
+                            expandedCityId = nil
+                        } else {
+                            expandedCityId = city.id
+                        }
+                    }
                 }
             } label: {
                 HStack {
-                    Image(systemName: viewModel.expandedCities.contains(city.id) ? "minus" : "plus")
-                        .foregroundColor(.blue)
+                    Image(systemName: expandedCityId == city.id ? "minus" : "plus")
+                        .foregroundColor(.gray)
                         .frame(width: 20)
                     
                     Text(city.name)
@@ -76,9 +84,10 @@ struct CityRow: View {
                     
                     Spacer()
                     
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                        .font(.system(size: 14))
+                    NavigationLink(destination: CityMapView(city: city)) {
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.gray)
+                    }
                 }
                 .padding()
                 .background(Color.white)
@@ -87,7 +96,7 @@ struct CityRow: View {
             }
             
             // Locations
-            if viewModel.expandedCities.contains(city.id) {
+            if expandedCityId == city.id {
                 VStack(spacing: 8) {
                     ForEach(city.locations) { location in
                         LocationRow(location: location, viewModel: viewModel)
