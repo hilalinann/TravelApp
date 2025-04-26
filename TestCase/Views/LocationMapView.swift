@@ -8,6 +8,8 @@ struct LocationMapView: View {
     @StateObject private var locationManager = LocationManager()
     @State private var region: MKCoordinateRegion
     @State private var showingDirectionsAlert = false
+    @State private var showingLocationAlert = false
+    @State private var showingSettingsAlert = false
     
     init(location: CityLocation) {
         self.location = location
@@ -24,7 +26,7 @@ struct LocationMapView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Full screen map
-            Map(coordinateRegion: $region, annotationItems: [location]) { location in
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: [location]) { location in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(
                     latitude: location.coordinates.lat,
                     longitude: location.coordinates.lng
@@ -102,7 +104,42 @@ struct LocationMapView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
+            checkLocationAuthorization()
+        }
+        .alert("Kendi konumunu haritada görmek ister misin?", isPresented: $showingLocationAlert) {
+            Button("Evet") {
+                locationManager.requestLocation()
+            }
+            Button("Hayır", role: .cancel) { }
+        }
+        .alert("Konum İzni Gerekli", isPresented: $showingSettingsAlert) {
+            Button("Ayarlara Git") {
+                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsUrl)
+                }
+            }
+            Button("İptal", role: .cancel) { }
+        } message: {
+            Text("Konumunuzu görebilmek için ayarlardan konum iznini etkinleştirmeniz gerekmektedir.")
+        }
+    }
+    
+    private func checkLocationAuthorization() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            showingLocationAlert = true
+        case .restricted, .denied:
+            showingSettingsAlert = true
+        case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
+            if let userLocation = locationManager.location {
+                region = MKCoordinateRegion(
+                    center: userLocation.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            }
+        @unknown default:
+            break
         }
     }
     
@@ -143,8 +180,10 @@ enum MapApp {
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     @Published var location: CLLocation?
+    @Published var authorizationStatus: CLAuthorizationStatus
     
     override init() {
+        authorizationStatus = locationManager.authorizationStatus
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -161,5 +200,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Location error: \(error.localizedDescription)")
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationStatus = manager.authorizationStatus
     }
 } 
