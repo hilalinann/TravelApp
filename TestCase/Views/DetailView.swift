@@ -68,7 +68,7 @@ struct DetailView: View {
             }
             
             // Map button - Fixed at bottom
-            VStack {
+           VStack {
                 Button {
                     showMap = true
                 } label: {
