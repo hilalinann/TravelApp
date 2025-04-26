@@ -91,7 +91,7 @@ struct DetailView: View {
         }
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showMap) {
-            Text("Konum Harita Sayfası") // Bu kısmı daha sonra güncelleyeceğiz
+            LocationMapView(location: location)
         }
     }
 }
