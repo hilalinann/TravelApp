@@ -10,9 +10,23 @@
 		C44986D02DBCD0510035BA1A /* TestCase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestCase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C49AF0D42DBD01FC0010405A /* Exceptions for "TestCase" folder in "TestCase" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				TestCase/Info.plist,
+			);
+			target = C44986CF2DBCD0510035BA1A /* TestCase */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C44986D22DBCD0510035BA1A /* TestCase */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C49AF0D42DBD01FC0010405A /* Exceptions for "TestCase" folder in "TestCase" target */,
+			);
 			path = TestCase;
 			sourceTree = "<group>";
 		};
@@ -254,6 +268,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"TestCase/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TestCase/TestCase/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -282,6 +297,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"TestCase/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TestCase/TestCase/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
