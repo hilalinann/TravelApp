@@ -107,8 +107,7 @@ struct CityMapView: View {
                     .padding(.horizontal)
                 }
                 .frame(height: 200)
-                .background(Color.white)
-                .shadow(color: .black.opacity(0.1), radius: 5, y: -2)
+                .background(Color.clear)
             }
         }
         .navigationBarHidden(true)
@@ -164,7 +163,7 @@ struct LocationCard: View {
             }
             .frame(width: 200)
             .padding(8)
-            .background(Color.white)
+            .background(Color.white.opacity(0.8))
             .cornerRadius(12)
             .shadow(color: .black.opacity(0.1), radius: 3)
         }
