@@ -42,22 +42,28 @@ struct LocationMapView: View {
             }
             .edgesIgnoringSafeArea(.all)
             
-            // Navigation bar
-            VStack {
+            // Content overlay
+            VStack(spacing: 0) {
+                // Top navigation bar
                 HStack {
                     Button {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.black)
+                            .foregroundColor(.blue)
                             .font(.system(size: 22))
-                            .padding()
-                            .background(Circle().fill(.white))
                     }
-                    .padding()
+                    
+                    Spacer()
+                    
+                    Text(location.name.uppercased())
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundColor(.black)
                     
                     Spacer()
                 }
+                .padding(.horizontal)
+                .padding(.top, 16)
                 
                 Spacer()
                 
@@ -94,6 +100,7 @@ struct LocationMapView: View {
                 }
             }
         }
+        .navigationBarHidden(true)
         .onAppear {
             locationManager.requestLocation()
         }
