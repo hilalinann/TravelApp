@@ -27,7 +27,40 @@ struct CityMapView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .top) {
+            // Map
+            Map(coordinateRegion: $region, annotationItems: city.locations) { location in
+                MapAnnotation(coordinate: CLLocationCoordinate2D(
+                    latitude: location.coordinates.lat,
+                    longitude: location.coordinates.lng
+                )) {
+                    if location.id == city.locations.first?.id {
+                        // İlk konum için özel marker
+                        Image(systemName: "mappin.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.red)
+                            .background(
+                                Circle()
+                                    .fill(.white)
+                                    .frame(width: 44, height: 44)
+                            )
+                            .shadow(radius: 2)
+                    } else {
+                        // Diğer konumlar için yıldız
+                        Image(systemName: "star.fill")
+                            .font(.title)
+                            .foregroundColor(.yellow)
+                            .background(
+                                Circle()
+                                    .fill(.white)
+                                    .frame(width: 40, height: 40)
+                            )
+                            .shadow(radius: 2)
+                    }
+                }
+            }
+            .edgesIgnoringSafeArea(.all)
+            
             // Top navigation bar
             HStack {
                 Button {
@@ -40,7 +73,7 @@ struct CityMapView: View {
                 
                 Spacer()
                 
-                Text("ŞEHİR HARİTA SAYFASI")
+                Text(city.name.uppercased())
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.black)
                 
@@ -48,24 +81,6 @@ struct CityMapView: View {
             }
             .padding(.horizontal)
             .padding(.top, 16)
-            
-            // Map
-            Map(coordinateRegion: $region, annotationItems: city.locations) { location in
-                MapAnnotation(coordinate: CLLocationCoordinate2D(
-                    latitude: location.coordinates.lat,
-                    longitude: location.coordinates.lng
-                )) {
-                    Image(systemName: "star.fill")
-                        .font(.title)
-                        .foregroundColor(.yellow)
-                        .background(
-                            Circle()
-                                .fill(.white)
-                                .frame(width: 40, height: 40)
-                        )
-                        .shadow(radius: 2)
-                }
-            }
         }
         .navigationBarHidden(true)
     }
