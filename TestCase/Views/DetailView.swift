@@ -5,6 +5,7 @@ struct DetailView: View {
     @ObservedObject var viewModel: LocationViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showMap = false
+    @State private var isImageLoaded = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -23,6 +24,8 @@ struct DetailView: View {
                     
                     Text(location.name)
                         .font(.system(size: 20, weight: .semibold))
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .center) // Ortaya hizalama ekledim
                     
                     Spacer()
                     
@@ -46,9 +49,12 @@ struct DetailView: View {
                             AsyncImage(url: URL(string: imageUrl)) { image in
                                 image
                                     .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(height: 200)
+                                    .scaledToFit()  // Görselin uygun şekilde sığmasını sağlıyor
+                                    .frame(maxWidth: .infinity) // Görselin ekran genişliğine uymasını sağla
                                     .clipped()
+                                    .onAppear {
+                                        isImageLoaded = true
+                                    }
                             } placeholder: {
                                 Rectangle()
                                     .fill(Color.gray.opacity(0.2))
@@ -60,16 +66,19 @@ struct DetailView: View {
                         // Description
                         Text(location.description)
                             .font(.system(size: 16))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
+                            .multilineTextAlignment(.leading)
+                            .padding(.horizontal, 20) // Yalnızca yatay padding ekledim
                             .padding(.top, 20)
                             .padding(.bottom, 80)
+                            .frame(maxWidth: .infinity, alignment: .leading) // Açıklama metnini sola hizaladım
+                            .fixedSize(horizontal: false, vertical: true) // Yazının taşmaması için
                     }
                 }
+                .padding(.bottom, 20) // ScrollView altına padding ekle
             }
             
             // Map button - Fixed at bottom
-           VStack {
+            VStack {
                 Button {
                     showMap = true
                 } label: {
@@ -93,6 +102,12 @@ struct DetailView: View {
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showMap) {
             LocationMapView(location: location)
+        }
+        .onAppear {
+            // Görsel veya içerik yüklemesi tamamlandığında yapılacak işlemler
+            if location.image == nil {
+                // Eğer resim yoksa, uygun bir placeholder veya varsayılan resim gösterilebilir.
+            }
         }
     }
 }
