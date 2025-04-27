@@ -13,6 +13,7 @@ struct CityMapView: View {
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
     @State private var isFollowingUser = false
+    @State private var buttonOffset: CGFloat = 0
 
     init(city: City) {
         self.city = city
@@ -61,6 +62,17 @@ struct CityMapView: View {
                 }
             }
             .edgesIgnoringSafeArea(.all)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        buttonOffset = value.translation.height
+                    }
+                    .onEnded { value in
+                        withAnimation(.spring()) {
+                            buttonOffset = 0
+                        }
+                    }
+            )
 
             HStack {
                 Button {
@@ -102,8 +114,10 @@ struct CityMapView: View {
                             .shadow(radius: 2)
                     }
                     .padding(.trailing, 16)
-                    .padding(.bottom, 100)
+                    .offset(y: buttonOffset)
+                    .animation(.spring(), value: buttonOffset)
                 }
+                .padding(.bottom, 20)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
