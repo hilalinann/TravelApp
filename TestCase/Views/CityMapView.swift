@@ -79,7 +79,7 @@ struct CityMapView: View {
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
+                        .foregroundColor(Theme.textColor)
                         .font(.system(size: 22))
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
@@ -89,13 +89,13 @@ struct CityMapView: View {
 
                 Text(city.name.uppercased())
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(Color(uiColor: .label))
+                    .foregroundColor(Theme.textColor)
 
                 Spacer()
             }
             .padding(.horizontal)
             .padding(.top, 16)
-            .background(Color(uiColor: .systemBackground).opacity(0.8))
+            .background(Color.clear)
 
             VStack {
                 Spacer()
