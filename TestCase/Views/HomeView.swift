@@ -15,9 +15,7 @@ struct HomeView: View {
                     
                     Spacer()
                     
-                    Button {
-                        showingFavorites = true
-                    } label: {
+                    NavigationLink(destination: FavoritesView(viewModel: viewModel)) {
                         Image(systemName: "heart")
                             .foregroundColor(.red)
                             .font(.system(size: 22))
@@ -47,10 +45,6 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .navigationDestination(isPresented: $showingFavorites) {
-                // Navigate to the FavoritesView
-                FavoritesView() // Here is your favorites page
-            }
         }
     }
 }
@@ -150,5 +144,4 @@ struct LocationRow: View {
 
 #Preview {
     HomeView(viewModel: LocationViewModel())
-}
-
+} 
