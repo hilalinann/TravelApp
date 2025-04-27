@@ -10,6 +10,7 @@ struct LocationMapView: View {
     @State private var showingDirectionsAlert = false
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
+    @State private var annotations: [CustomAnnotation] = []
     
     init(location: CityLocation) {
         self.location = location
@@ -26,20 +27,28 @@ struct LocationMapView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Full screen map
-            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: [location]) { location in
-                MapAnnotation(coordinate: CLLocationCoordinate2D(
-                    latitude: location.coordinates.lat,
-                    longitude: location.coordinates.lng
-                )) {
-                    Image(systemName: "star.fill")
-                        .font(.title)
-                        .foregroundColor(.yellow)
-                        .background(
-                            Circle()
-                                .fill(.white)
-                                .frame(width: 40, height: 40)
-                        )
-                        .shadow(radius: 2)
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: annotations) { item in
+                MapAnnotation(coordinate: item.coordinate) {
+                    if item.isUser {
+                        VStack(spacing: 4) {
+                            Image(systemName: "location.circle.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.blue)
+                            Text("Ben")
+                                .font(.caption2)
+                                .foregroundColor(.blue)
+                        }
+                    } else {
+                        Image(systemName: "star.fill")
+                            .font(.title)
+                            .foregroundColor(.yellow)
+                            .background(
+                                Circle()
+                                    .fill(.white)
+                                    .frame(width: 40, height: 40)
+                            )
+                            .shadow(radius: 2)
+                    }
                 }
             }
             .edgesIgnoringSafeArea(.all)
@@ -105,6 +114,16 @@ struct LocationMapView: View {
         .navigationBarHidden(true)
         .onAppear {
             checkLocationAuthorization()
+            setupAnnotations()
+        }
+        .onChange(of: locationManager.location) { _ in
+            setupAnnotations()
+            if let newLocation = locationManager.location {
+                region = MKCoordinateRegion(
+                    center: newLocation.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            }
         }
         .alert("Kendi konumunu haritada görmek ister misin?", isPresented: $showingLocationAlert) {
             Button("Evet") {
@@ -132,12 +151,6 @@ struct LocationMapView: View {
             showingSettingsAlert = true
         case .authorizedWhenInUse, .authorizedAlways:
             locationManager.requestLocation()
-            if let userLocation = locationManager.location {
-                region = MKCoordinateRegion(
-                    center: userLocation.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-                )
-            }
         @unknown default:
             break
         }
@@ -171,12 +184,47 @@ struct LocationMapView: View {
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.open(url)
     }
+    
+    private func setupAnnotations() {
+        var items: [CustomAnnotation] = []
+        
+        // Şehir lokasyonu
+        let cityAnnotation = CustomAnnotation(
+            id: UUID(),
+            coordinate: CLLocationCoordinate2D(
+                latitude: location.coordinates.lat,
+                longitude: location.coordinates.lng
+            ),
+            isUser: false
+        )
+        items.append(cityAnnotation)
+        
+        // Kullanıcı lokasyonu
+        if let userLoc = locationManager.location {
+            let userAnnotation = CustomAnnotation(
+                id: UUID(),
+                coordinate: userLoc.coordinate,
+                isUser: true
+            )
+            items.append(userAnnotation)
+        }
+        
+        annotations = items
+    }
+}
+
+// Haritada gösterilecek pin'ler için model
+struct CustomAnnotation: Identifiable {
+    let id: UUID
+    let coordinate: CLLocationCoordinate2D
+    let isUser: Bool
 }
 
 enum MapApp {
     case apple, google, yandex
 }
 
+// Location Manager
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     @Published var location: CLLocation?
@@ -205,4 +253,5 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
     }
-} 
+}
+
