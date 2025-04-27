@@ -10,8 +10,15 @@ struct LocationMapView: View {
     @State private var showingDirectionsAlert = false
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
-    @State private var annotations: [CustomAnnotation] = []
-    
+    @State private var userLocation: UserLocation?
+
+    struct LocationPin: Identifiable {
+        var id = UUID()
+        var coordinate: CLLocationCoordinate2D
+        var title: String
+        var color: Color
+    }
+
     init(location: CityLocation) {
         self.location = location
         let coordinate = CLLocationCoordinate2D(
@@ -27,28 +34,13 @@ struct LocationMapView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             // Full screen map
-            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: annotations) { item in
+            Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: getAnnotations()) { item in
+                // MapAnnotation ile özel marker ekliyoruz
                 MapAnnotation(coordinate: item.coordinate) {
-                    if item.isUser {
-                        VStack(spacing: 4) {
-                            Image(systemName: "location.circle.fill")
-                                .font(.system(size: 30))
-                                .foregroundColor(.blue)
-                            Text("Ben")
-                                .font(.caption2)
-                                .foregroundColor(.blue)
-                        }
-                    } else {
-                        Image(systemName: "star.fill")
-                            .font(.title)
-                            .foregroundColor(.yellow)
-                            .background(
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 40, height: 40)
-                            )
-                            .shadow(radius: 2)
-                    }
+                    Circle()
+                        .fill(item.color)
+                        .frame(width: 20, height: 20)
+                        .overlay(Circle().stroke(Color.white, lineWidth: 2))
                 }
             }
             .edgesIgnoringSafeArea(.all)
@@ -114,11 +106,11 @@ struct LocationMapView: View {
         .navigationBarHidden(true)
         .onAppear {
             checkLocationAuthorization()
-            setupAnnotations()
         }
-        .onChange(of: locationManager.location) { _ in
-            setupAnnotations()
-            if let newLocation = locationManager.location {
+        .onChange(of: locationManager.location) { newLocation in
+            // Konum güncellendiğinde
+            if let newLocation = newLocation {
+                userLocation = UserLocation(coordinate: newLocation.coordinate)
                 region = MKCoordinateRegion(
                     center: newLocation.coordinate,
                     span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
@@ -184,74 +176,34 @@ struct LocationMapView: View {
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.open(url)
     }
-    
-    private func setupAnnotations() {
-        var items: [CustomAnnotation] = []
-        
-        // Şehir lokasyonu
-        let cityAnnotation = CustomAnnotation(
-            id: UUID(),
-            coordinate: CLLocationCoordinate2D(
-                latitude: location.coordinates.lat,
-                longitude: location.coordinates.lng
-            ),
-            isUser: false
-        )
-        items.append(cityAnnotation)
-        
-        // Kullanıcı lokasyonu
-        if let userLoc = locationManager.location {
-            let userAnnotation = CustomAnnotation(
-                id: UUID(),
-                coordinate: userLoc.coordinate,
-                isUser: true
-            )
-            items.append(userAnnotation)
+
+    // Bu fonksiyon, harita üzerinde gösterilecek pin'leri döndürür
+    private func getAnnotations() -> [LocationPin] {
+        var annotations: [LocationPin] = []
+
+        // Kullanıcının konumunu mavi pinle ekliyoruz
+        if let userLocation = userLocation {
+            annotations.append(LocationPin(coordinate: userLocation.coordinate, title: "Benim Konumum", color: .blue))
         }
-        
-        annotations = items
+
+        // Seçilen şehir konumunu yeşil pinle ekliyoruz
+        let cityLocation = LocationPin(
+            coordinate: CLLocationCoordinate2D(latitude: location.coordinates.lat, longitude: location.coordinates.lng),
+            title: location.name,
+            color: .green
+        )
+        annotations.append(cityLocation)
+
+        return annotations
     }
 }
 
-// Haritada gösterilecek pin'ler için model
-struct CustomAnnotation: Identifiable {
-    let id: UUID
-    let coordinate: CLLocationCoordinate2D
-    let isUser: Bool
+struct UserLocation: Identifiable {
+    var id = UUID()
+    var coordinate: CLLocationCoordinate2D
 }
 
 enum MapApp {
     case apple, google, yandex
-}
-
-// Location Manager
-class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
-    private let locationManager = CLLocationManager()
-    @Published var location: CLLocation?
-    @Published var authorizationStatus: CLAuthorizationStatus
-    
-    override init() {
-        authorizationStatus = locationManager.authorizationStatus
-        super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-    }
-    
-    func requestLocation() {
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        location = locations.first
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location error: \(error.localizedDescription)")
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
-    }
 }
 
