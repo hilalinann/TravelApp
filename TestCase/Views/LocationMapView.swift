@@ -32,10 +32,8 @@ struct LocationMapView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Full screen map
+        ZStack(alignment: .bottomTrailing) {
             Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: getAnnotations()) { item in
-                // MapAnnotation ile özel marker ekliyoruz
                 MapAnnotation(coordinate: item.coordinate) {
                     Circle()
                         .fill(item.color)
@@ -45,9 +43,7 @@ struct LocationMapView: View {
             }
             .edgesIgnoringSafeArea(.all)
             
-            // Content overlay
             VStack(spacing: 0) {
-                // Top navigation bar
                 HStack {
                     Button {
                         dismiss()
@@ -70,7 +66,6 @@ struct LocationMapView: View {
                 
                 Spacer()
                 
-                // Directions button
                 Button {
                     showingDirectionsAlert = true
                 } label: {
@@ -102,13 +97,27 @@ struct LocationMapView: View {
                     )
                 }
             }
+            
+            // >>>>> Kullanıcı Konum Butonu <<<<<
+            Button(action: {
+                handleLocationButtonTapped()
+            }) {
+                Image(systemName: "location.fill")
+                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(radius: 5)
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 140)
+            }
         }
         .navigationBarHidden(true)
         .onAppear {
             checkLocationAuthorization()
         }
         .onChange(of: locationManager.location) { newLocation in
-            // Konum güncellendiğinde
             if let newLocation = newLocation {
                 userLocation = UserLocation(coordinate: newLocation.coordinate)
                 region = MKCoordinateRegion(
@@ -148,6 +157,26 @@ struct LocationMapView: View {
         }
     }
     
+    private func handleLocationButtonTapped() {
+        switch locationManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            if let userLocation = locationManager.location {
+                region = MKCoordinateRegion(
+                    center: userLocation.coordinate,
+                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                )
+            } else {
+                locationManager.requestLocation()
+            }
+        case .notDetermined:
+            showingLocationAlert = true
+        case .restricted, .denied:
+            showingSettingsAlert = true
+        @unknown default:
+            break
+        }
+    }
+    
     private func openInMaps(using app: MapApp) {
         guard let userLocation = locationManager.location else {
             return
@@ -176,24 +205,21 @@ struct LocationMapView: View {
         guard let url = URL(string: urlString) else { return }
         UIApplication.shared.open(url)
     }
-
-    // Bu fonksiyon, harita üzerinde gösterilecek pin'leri döndürür
+    
     private func getAnnotations() -> [LocationPin] {
         var annotations: [LocationPin] = []
-
-        // Kullanıcının konumunu mavi pinle ekliyoruz
+        
         if let userLocation = userLocation {
             annotations.append(LocationPin(coordinate: userLocation.coordinate, title: "Benim Konumum", color: .blue))
         }
-
-        // Seçilen şehir konumunu yeşil pinle ekliyoruz
+        
         let cityLocation = LocationPin(
             coordinate: CLLocationCoordinate2D(latitude: location.coordinates.lat, longitude: location.coordinates.lng),
             title: location.name,
             color: .green
         )
         annotations.append(cityLocation)
-
+        
         return annotations
     }
 }
