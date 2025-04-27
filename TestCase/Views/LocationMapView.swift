@@ -51,6 +51,8 @@ struct LocationMapView: View {
                         Image(systemName: "chevron.left")
                             .foregroundColor(.blue)
                             .font(.system(size: 22))
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
                     }
                     
                     Spacer()
@@ -98,7 +100,6 @@ struct LocationMapView: View {
                 }
             }
             
-            // >>>>> Kullanıcı Konum Butonu <<<<<
             Button(action: {
                 handleLocationButtonTapped()
             }) {
