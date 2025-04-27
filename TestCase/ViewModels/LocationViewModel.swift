@@ -11,6 +11,7 @@ class LocationViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: Error?
     @Published var favoriteLocationIds: Set<Int> = []
+    
     private let favoritesKey = "favoriteLocations"
     
     // Örnek konumlar - gerçek uygulamada bu veriler API'den gelecektir
@@ -27,10 +28,12 @@ class LocationViewModel: ObservableObject {
         }
     }
     
+    // Tüm konumları al
     func getAllLocations() -> [CityLocation] {
         return allLocations
     }
     
+    // Favorileri yükle (UserDefaults)
     func loadFavorites() {
         if let data = UserDefaults.standard.data(forKey: favoritesKey),
            let decoded = try? JSONDecoder().decode([Int].self, from: data) {
@@ -38,12 +41,14 @@ class LocationViewModel: ObservableObject {
         }
     }
     
+    // Favorileri kaydet (UserDefaults)
     func saveFavorites() {
         if let encoded = try? JSONEncoder().encode(Array(favoriteLocationIds)) {
             UserDefaults.standard.set(encoded, forKey: favoritesKey)
         }
     }
     
+    // Konumları API'den al
     func fetchLocations() async {
         guard !isLoading else {
             print("🔄 LocationViewModel: Zaten yükleme yapılıyor, yeni istek atlanıyor")
@@ -82,6 +87,7 @@ class LocationViewModel: ObservableObject {
         print("🔵 LocationViewModel: fetchLocations tamamlandı")
     }
     
+    // Daha fazla konum yükleme
     func loadMoreIfNeeded(currentCity: City) {
         guard let lastCity = cities.last,
               lastCity.id == currentCity.id,
@@ -94,6 +100,7 @@ class LocationViewModel: ObservableObject {
         }
     }
     
+    // Şehirlerin genişletilmesi
     func toggleCityExpansion(_ cityId: String) {
         if expandedCities.contains(cityId) {
             expandedCities.remove(cityId)
@@ -102,10 +109,12 @@ class LocationViewModel: ObservableObject {
         }
     }
     
+    // Tüm şehirleri daraltma
     func collapseAllCities() {
         expandedCities.removeAll()
     }
     
+    // Favori konum ekleme/çıkarma
     func toggleFavorite(location: CityLocation) {
         if isFavorite(locationId: location.id) {
             favoriteLocationIds.remove(location.id)
@@ -115,7 +124,18 @@ class LocationViewModel: ObservableObject {
         saveFavorites()
     }
     
+    // Konumun favori olup olmadığını kontrol et
     func isFavorite(locationId: Int) -> Bool {
         return favoriteLocationIds.contains(locationId)
     }
+    
+    // Favori konumları listele
+    func getFavoriteLocations() -> [CityLocation] {
+        return cities.flatMap { city in
+            city.locations.filter { location in
+                isFavorite(locationId: location.id)
+            }
+        }
+    }
 }
+
