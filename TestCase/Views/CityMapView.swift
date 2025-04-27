@@ -82,6 +82,8 @@ struct CityMapView: View {
                     Image(systemName: "chevron.left")
                         .foregroundColor(.blue)
                         .font(.system(size: 22))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 
                 Spacer()
@@ -91,6 +93,10 @@ struct CityMapView: View {
                     .foregroundColor(.black)
                 
                 Spacer()
+                
+                // Sağ tarafta boş alan bırakmak için
+                Color.clear
+                    .frame(width: 44, height: 44)
             }
             .padding(.horizontal)
             .padding(.top, 16)
