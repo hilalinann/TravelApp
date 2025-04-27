@@ -48,7 +48,8 @@ struct HomeView: View {
             }
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showingFavorites) {
-                Text("Favoriler Sayfası")
+                // Navigate to the FavoritesView
+                FavoritesView() // Here is your favorites page
             }
         }
     }
@@ -149,4 +150,5 @@ struct LocationRow: View {
 
 #Preview {
     HomeView(viewModel: LocationViewModel())
-} 
+}
+

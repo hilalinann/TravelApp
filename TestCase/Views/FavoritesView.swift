@@ -1,8 +1,18 @@
-//
-//  FavoritesView.swift
-//  TestCase
-//
-//  Created by Hilal İnan on 27.04.2025.
-//
+import SwiftUI
 
-import Foundation
+struct FavoritesView: View {
+    var body: some View {
+        VStack {
+            Text("Favoriler Sayfası")
+                .font(.largeTitle)
+                .padding()
+            
+            // Add more content as needed
+        }
+    }
+}
+
+#Preview {
+    FavoritesView()
+}
+
