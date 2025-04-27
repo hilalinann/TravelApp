@@ -27,6 +27,7 @@ struct DetailView: View {
                     Spacer()
                     
                     Button {
+                        // Favori ekle/çıkartma işlemi
                         viewModel.toggleFavorite(location: location)
                     } label: {
                         Image(systemName: viewModel.isFavorite(locationId: location.id) ? "heart.fill" : "heart")
@@ -96,17 +97,3 @@ struct DetailView: View {
     }
 }
 
-#Preview {
-    NavigationStack {
-        DetailView(
-            location: CityLocation(
-                id: 1,
-                name: "Anıtkabir",
-                description: "Türkiye Cumhuriyeti'nin kurucusu Atatürk'ün anıt mezarı.",
-                coordinates: Coordinates(lat: 39.925018, lng: 32.836956),
-                image: nil
-            ),
-            viewModel: LocationViewModel()
-        )
-    }
-} 
