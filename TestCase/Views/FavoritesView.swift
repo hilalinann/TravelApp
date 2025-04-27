@@ -13,7 +13,7 @@ struct FavoritesView: View {
                     presentationMode.wrappedValue.dismiss()  // Bu, favoriler sayfasından çıkıp anasayfaya dönecek
                 }) {
                     Image(systemName: "chevron.left")
-                        .foregroundColor(.black)
+                        .foregroundColor(Theme.textColor)
                         .font(.system(size: 22))
                 }
                 
@@ -21,6 +21,7 @@ struct FavoritesView: View {
                 
                 Text("Favorilerim")
                     .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(Theme.textColor)
                 
                 Spacer()
                 
@@ -30,15 +31,15 @@ struct FavoritesView: View {
                 }
             }
             .padding()
-            .background(Color.white)
-            .shadow(color: Color.black.opacity(0.1), radius: 3, y: 1)
+            .background(Theme.navigationBarBackgroundColor)
+            .shadow(color: Theme.shadowColor, radius: 3, y: 1)
             
             // Favori konumları listele veya mesaj göster
             if viewModel.getFavoriteLocations().isEmpty {
                 // Eğer favori konum yoksa, mesaj göster
                 Text("Henüz hiçbir konumu favorilere eklemedin.")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(.gray)
+                    .foregroundColor(Theme.secondaryTextColor)
                     .padding()
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -56,6 +57,7 @@ struct FavoritesView: View {
         }
         .navigationBarBackButtonHidden(true) // Varsayılan geri tuşunu gizle
         .navigationBarHidden(true)           // Başka navigation bar'ı gizle
+        .background(Theme.backgroundColor)
     }
 }
 

@@ -12,18 +12,19 @@ struct HomeView: View {
                 HStack {
                     Text("Önemli Konumlar")
                         .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(Theme.textColor)
                     
                     Spacer()
                     
                     NavigationLink(destination: FavoritesView(viewModel: viewModel)) {
                         Image(systemName: "heart")
-                            .foregroundColor(.red)
+                            .foregroundColor(Theme.favoriteColor)
                             .font(.system(size: 22))
                     }
                 }
                 .padding()
-                .background(Color.white)
-                .shadow(color: Color.black.opacity(0.1), radius: 3, y: 1)
+                .background(Theme.navigationBarBackgroundColor)
+                .shadow(color: Theme.shadowColor, radius: 3, y: 1)
                 
                 // City list
                 ScrollView {
@@ -45,6 +46,7 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
+            .background(Theme.backgroundColor)
         }
     }
 }
@@ -70,24 +72,24 @@ struct CityRow: View {
             } label: {
                 HStack {
                     Image(systemName: expandedCityId == city.id ? "minus" : "plus")
-                        .foregroundColor(.gray)
+                        .foregroundColor(Theme.secondaryTextColor)
                         .frame(width: 20)
                     
                     Text(city.name)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Theme.textColor)
                         .font(.system(size: 16, weight: .medium))
                     
                     Spacer()
                     
                     NavigationLink(destination: CityMapView(city: city)) {
                         Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
+                            .foregroundColor(Theme.secondaryTextColor)
                     }
                 }
                 .padding()
-                .background(Color.white)
+                .background(Theme.cardBackgroundColor)
                 .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                .shadow(color: Theme.shadowColor, radius: 2, x: 0, y: 1)
             }
             
             // Locations
@@ -116,22 +118,22 @@ struct LocationRow: View {
             } label: {
                 HStack {
                     Text(location.name)
-                        .foregroundColor(.primary)
+                        .foregroundColor(Theme.textColor)
                         .font(.system(size: 14))
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.white)
+                .background(Theme.cardBackgroundColor)
                 .cornerRadius(10)
-                .shadow(color: Color.black.opacity(0.1), radius: 1)
+                .shadow(color: Theme.shadowColor, radius: 1)
             }
             
             Button {
                 viewModel.toggleFavorite(location: location)
             } label: {
                 Image(systemName: viewModel.isFavorite(locationId: location.id) ? "heart.fill" : "heart")
-                    .foregroundColor(.red)
+                    .foregroundColor(Theme.favoriteColor)
                     .font(.system(size: 14))
             }
             .padding(.leading, 8)

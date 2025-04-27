@@ -9,13 +9,14 @@ struct SplashView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.white.ignoresSafeArea()
+                Theme.backgroundColor.ignoresSafeArea()
                 
                 VStack {
                     Spacer()
                     
                     Text("Şehirlerdeki\nÖnemli Konumlar")
                         .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(Theme.textColor)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                     

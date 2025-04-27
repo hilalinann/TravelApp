@@ -16,7 +16,7 @@ struct DetailView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
-                            .foregroundColor(.black)
+                            .foregroundColor(Theme.textColor)
                             .font(.system(size: 22))
                     }
                     
@@ -24,23 +24,23 @@ struct DetailView: View {
                     
                     Text(location.name)
                         .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(Theme.textColor)
                         .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .center) // Ortaya hizalama ekledim
+                        .frame(maxWidth: .infinity, alignment: .center)
                     
                     Spacer()
                     
                     Button {
-                        // Favori ekle/çıkartma işlemi
                         viewModel.toggleFavorite(location: location)
                     } label: {
                         Image(systemName: viewModel.isFavorite(locationId: location.id) ? "heart.fill" : "heart")
-                            .foregroundColor(.red)
+                            .foregroundColor(Theme.favoriteColor)
                             .font(.system(size: 22))
                     }
                 }
                 .padding()
-                .background(Color.white)
-                .shadow(color: Color.black.opacity(0.1), radius: 3, y: 1)
+                .background(Theme.navigationBarBackgroundColor)
+                .shadow(color: Theme.shadowColor, radius: 3, y: 1)
                 
                 ScrollView {
                     VStack(spacing: 0) {
@@ -49,15 +49,15 @@ struct DetailView: View {
                             AsyncImage(url: URL(string: imageUrl)) { image in
                                 image
                                     .resizable()
-                                    .scaledToFit()  // Görselin uygun şekilde sığmasını sağlıyor
-                                    .frame(maxWidth: .infinity) // Görselin ekran genişliğine uymasını sağla
+                                    .scaledToFit()
+                                    .frame(maxWidth: .infinity)
                                     .clipped()
                                     .onAppear {
                                         isImageLoaded = true
                                     }
                             } placeholder: {
                                 Rectangle()
-                                    .fill(Color.gray.opacity(0.2))
+                                    .fill(Theme.secondaryBackgroundColor)
                                     .frame(height: 200)
                             }
                             .padding(.top, 120)
@@ -66,16 +66,18 @@ struct DetailView: View {
                         // Description
                         Text(location.description)
                             .font(.system(size: 16))
+                            .foregroundColor(Theme.textColor)
                             .multilineTextAlignment(.leading)
-                            .padding(.horizontal, 20) // Yalnızca yatay padding ekledim
+                            .padding(.horizontal, 20)
                             .padding(.top, 20)
                             .padding(.bottom, 80)
-                            .frame(maxWidth: .infinity, alignment: .leading) // Açıklama metnini sola hizaladım
-                            .fixedSize(horizontal: false, vertical: true) // Yazının taşmaması için
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .padding(.bottom, 20) // ScrollView altına padding ekle
+                .padding(.bottom, 20)
             }
+            .background(Theme.backgroundColor)
             
             // Map button - Fixed at bottom
             VStack {
@@ -87,7 +89,7 @@ struct DetailView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(Theme.accentColor)
                         .cornerRadius(10)
                 }
                 .padding(.horizontal, 20)
@@ -95,8 +97,8 @@ struct DetailView: View {
             .padding(.bottom, 20)
             .background(
                 Rectangle()
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.1), radius: 5, y: -5)
+                    .fill(Theme.backgroundColor)
+                    .shadow(color: Theme.shadowColor, radius: 5, y: -5)
             )
         }
         .navigationBarHidden(true)

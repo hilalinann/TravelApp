@@ -44,19 +44,19 @@ struct CityMapView: View {
                         Image(systemName: "mappin.circle.fill")
                             .font(.system(size: 40))
                             .foregroundColor(.red)
-                            .background(Circle().fill(.white).frame(width: 44, height: 44))
+                            .background(Circle().fill(Color(uiColor: .systemBackground)).frame(width: 44, height: 44))
                             .shadow(radius: 2)
                     } else if location.id == selectedLocation?.id {
                         Image(systemName: "star.circle.fill")
                             .font(.system(size: 44))
                             .foregroundColor(.blue)
-                            .background(Circle().fill(.white).frame(width: 48, height: 48))
+                            .background(Circle().fill(Color(uiColor: .systemBackground)).frame(width: 48, height: 48))
                             .shadow(radius: 3)
                     } else {
                         Image(systemName: "star.fill")
                             .font(.title)
                             .foregroundColor(.yellow)
-                            .background(Circle().fill(.white).frame(width: 40, height: 40))
+                            .background(Circle().fill(Color(uiColor: .systemBackground)).frame(width: 40, height: 40))
                             .shadow(radius: 2)
                     }
                 }
@@ -89,12 +89,13 @@ struct CityMapView: View {
 
                 Text(city.name.uppercased())
                     .font(.system(size: 17, weight: .semibold))
-                    .foregroundColor(.black)
+                    .foregroundColor(Color(uiColor: .label))
 
                 Spacer()
             }
             .padding(.horizontal)
             .padding(.top, 16)
+            .background(Color(uiColor: .systemBackground).opacity(0.8))
 
             VStack {
                 Spacer()
@@ -122,7 +123,7 @@ struct CityMapView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(city.locations) { location in
-                            LocationCard(location: location, selectedLocation: $selectedLocation)
+                            LocationCard(location: location, selectedLocation: $selectedLocation, userLocation: userLocation)
                         }
                     }
                     .padding(.horizontal)
@@ -197,6 +198,31 @@ struct CityMapView: View {
 struct LocationCard: View {
     let location: CityLocation
     @Binding var selectedLocation: CityLocation?
+    let userLocation: UserLocation?
+    
+    private func calculateDistance() -> String {
+        guard let userLocation = userLocation else {
+            return ""
+        }
+        
+        let userCoordinate = CLLocation(
+            latitude: userLocation.coordinate.latitude,
+            longitude: userLocation.coordinate.longitude
+        )
+        
+        let locationCoordinate = CLLocation(
+            latitude: location.coordinates.lat,
+            longitude: location.coordinates.lng
+        )
+        
+        let distance = userCoordinate.distance(from: locationCoordinate)
+        
+        if distance < 1000 {
+            return String(format: "%.0f m", distance)
+        } else {
+            return String(format: "%.1f km", distance / 1000)
+        }
+    }
 
     var body: some View {
         Button {
@@ -222,24 +248,34 @@ struct LocationCard: View {
 
                 Text(location.name)
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(Theme.textColor)
                     .lineLimit(1)
 
-                NavigationLink(destination: DetailView(location: location, viewModel: LocationViewModel())) {
-                    Text("Detaya Git")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.blue)
-                        .padding(.vertical, 4)
-                        .padding(.horizontal, 12)
-                        .background(Color.blue.opacity(0.1))
-                        .cornerRadius(8)
+                HStack {
+                    NavigationLink(destination: DetailView(location: location, viewModel: LocationViewModel())) {
+                        Text("Detaya Git")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(Theme.accentColor)
+                            .padding(.vertical, 4)
+                            .padding(.horizontal, 12)
+                            .background(Theme.accentColor.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    
+                    Spacer()
+                    
+                    if let _ = userLocation {
+                        Text(calculateDistance())
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(Theme.secondaryTextColor)
+                    }
                 }
             }
             .frame(width: 200)
             .padding(8)
-            .background(Color.white.opacity(0.8))
+            .background(Theme.cardBackgroundColor)
             .cornerRadius(12)
-            .shadow(color: .black.opacity(0.1), radius: 3)
+            .shadow(color: Theme.shadowColor, radius: 3)
         }
     }
 }
