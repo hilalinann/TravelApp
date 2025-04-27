@@ -8,7 +8,7 @@ struct CityMapView: View {
     @State private var region: MKCoordinateRegion
     @State private var selectedLocation: CityLocation?
     @State private var showingDetail = false
-    @StateObject private var locationManager = LocationManager()
+    @State private var locationManager = LocationManager()
     @State private var userLocation: UserLocation?
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
@@ -105,11 +105,11 @@ struct CityMapView: View {
                     Button {
                         handleLocationButtonTap()
                     } label: {
-                        Image(systemName: isFollowingUser ? "location.fill" : "location")
+                        Image(systemName: "location.fill")
                             .font(.system(size: 22))
-                            .foregroundColor(.blue)
+                            .foregroundColor(.white)
                             .padding(12)
-                            .background(Color.white)
+                            .background(Color.blue)
                             .clipShape(Circle())
                             .shadow(radius: 2)
                     }
