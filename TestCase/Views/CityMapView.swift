@@ -8,10 +8,11 @@ struct CityMapView: View {
     @State private var region: MKCoordinateRegion
     @State private var selectedLocation: CityLocation?
     @State private var showingDetail = false
-    @State private var locationManager = LocationManager()
+    @StateObject private var locationManager = LocationManager()
     @State private var userLocation: UserLocation?
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
+    @State private var isFollowingUser = false
 
     init(city: City) {
         self.city = city
@@ -68,6 +69,8 @@ struct CityMapView: View {
                     Image(systemName: "chevron.left")
                         .foregroundColor(.blue)
                         .font(.system(size: 22))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
 
                 Spacer()
@@ -83,6 +86,25 @@ struct CityMapView: View {
 
             VStack {
                 Spacer()
+                
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        handleLocationButtonTap()
+                    } label: {
+                        Image(systemName: isFollowingUser ? "location.fill" : "location")
+                            .font(.system(size: 22))
+                            .foregroundColor(.blue)
+                            .padding(12)
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 2)
+                    }
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 100)
+                }
+                
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(city.locations) { location in
@@ -99,9 +121,20 @@ struct CityMapView: View {
         .onAppear {
             checkLocationAuthorization()
         }
+        .onChange(of: locationManager.userLocation) { newLocation in
+            if let location = newLocation, isFollowingUser {
+                withAnimation {
+                    region = MKCoordinateRegion(
+                        center: location.coordinate,
+                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                    )
+                }
+            }
+        }
         .alert("Kendi konumunu haritada görmek ister misin?", isPresented: $showingLocationAlert) {
             Button("Evet") {
                 locationManager.requestLocation()
+                isFollowingUser = true
             }
             Button("Hayır", role: .cancel) { }
         }
@@ -114,6 +147,22 @@ struct CityMapView: View {
             Button("İptal", role: .cancel) { }
         } message: {
             Text("Konumunuzu görebilmek için ayarlardan konum iznini etkinleştirmeniz gerekmektedir.")
+        }
+    }
+
+    private func handleLocationButtonTap() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            showingLocationAlert = true
+        case .restricted, .denied:
+            showingSettingsAlert = true
+        case .authorizedWhenInUse, .authorizedAlways:
+            isFollowingUser.toggle()
+            if isFollowingUser {
+                locationManager.requestLocation()
+            }
+        @unknown default:
+            break
         }
     }
 

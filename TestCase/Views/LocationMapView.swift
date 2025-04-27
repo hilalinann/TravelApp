@@ -225,9 +225,13 @@ struct LocationMapView: View {
     }
 }
 
-struct UserLocation: Identifiable {
+struct UserLocation: Identifiable, Equatable {
     var id = UUID()
     var coordinate: CLLocationCoordinate2D
+    
+    static func == (lhs: UserLocation, rhs: UserLocation) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 enum MapApp {
