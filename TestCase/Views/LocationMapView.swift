@@ -116,6 +116,9 @@ struct LocationMapView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            checkLocationAuthorization()
+        }
         .onChange(of: locationManager.location) { newLocation in
             if let newLocation = newLocation, isFollowingUser {
                 userLocation = UserLocation(coordinate: newLocation.coordinate)
@@ -141,6 +144,19 @@ struct LocationMapView: View {
             Button("İptal", role: .cancel) { }
         } message: {
             Text("Konumunuzu görebilmek için ayarlardan konum iznini etkinleştirmeniz gerekmektedir.")
+        }
+    }
+    
+    private func checkLocationAuthorization() {
+        switch locationManager.authorizationStatus {
+        case .notDetermined:
+            showingLocationAlert = true
+        case .restricted, .denied:
+            showingSettingsAlert = true
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+        @unknown default:
+            break
         }
     }
     
