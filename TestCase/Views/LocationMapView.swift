@@ -11,6 +11,7 @@ struct LocationMapView: View {
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
     @State private var userLocation: UserLocation?
+    @State private var isFollowingUser = false
 
     struct LocationPin: Identifiable {
         var id = UUID()
@@ -115,11 +116,8 @@ struct LocationMapView: View {
             }
         }
         .navigationBarHidden(true)
-        .onAppear {
-            checkLocationAuthorization()
-        }
         .onChange(of: locationManager.location) { newLocation in
-            if let newLocation = newLocation {
+            if let newLocation = newLocation, isFollowingUser {
                 userLocation = UserLocation(coordinate: newLocation.coordinate)
                 region = MKCoordinateRegion(
                     center: newLocation.coordinate,
@@ -130,6 +128,7 @@ struct LocationMapView: View {
         .alert("Kendi konumunu haritada görmek ister misin?", isPresented: $showingLocationAlert) {
             Button("Evet") {
                 locationManager.requestLocation()
+                isFollowingUser = true
             }
             Button("Hayır", role: .cancel) { }
         }
@@ -145,22 +144,10 @@ struct LocationMapView: View {
         }
     }
     
-    private func checkLocationAuthorization() {
-        switch locationManager.authorizationStatus {
-        case .notDetermined:
-            showingLocationAlert = true
-        case .restricted, .denied:
-            showingSettingsAlert = true
-        case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.requestLocation()
-        @unknown default:
-            break
-        }
-    }
-    
     private func handleLocationButtonTapped() {
         switch locationManager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
+            isFollowingUser = true
             if let userLocation = locationManager.location {
                 region = MKCoordinateRegion(
                     center: userLocation.coordinate,
