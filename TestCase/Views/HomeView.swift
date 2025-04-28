@@ -108,35 +108,32 @@ struct LocationRow: View {
     @State private var showingDetail = false
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) { // spacing ekledik
             Button {
                 showingDetail = true
             } label: {
-                HStack {
-                    Text(location.name)
-                        .foregroundColor(Theme.textColor)
-                        .font(.system(size: 14))
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(Theme.cardBackgroundColor)
-                .cornerRadius(10)
-                .shadow(color: Theme.shadowColor, radius: 1)
+                Text(location.name)
+                    .foregroundColor(Theme.textColor)
+                    .font(.system(size: 14))
+                    .frame(maxWidth: .infinity, alignment: .leading) // yazıyı sola hizaladık
+                    .padding()
+                    .background(Theme.cardBackgroundColor)
+                    .cornerRadius(10)
+                    .shadow(color: Theme.shadowColor, radius: 1)
             }
-            
+
             Button {
                 viewModel.toggleFavorite(location: location)
             } label: {
                 Image(systemName: viewModel.isFavorite(locationId: location.id) ? "heart.fill" : "heart")
                     .foregroundColor(Theme.favoriteColor)
-                    .font(.system(size: 14))
+                    .font(.system(size: 16)) // İstersen biraz büyütebilirsin
             }
-            .padding(.leading, 8)
         }
+        .padding(.horizontal)
+        .padding(.vertical, 4)
         .navigationDestination(isPresented: $showingDetail) {
             DetailView(location: location, viewModel: viewModel)
         }
     }
 }
-
