@@ -78,3 +78,4 @@ struct LocationCard: View {
         }
     }
 }
+

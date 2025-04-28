@@ -8,7 +8,7 @@ struct CityMapView: View {
     @State private var region: MKCoordinateRegion
     @State private var selectedLocation: CityLocation?
     @State private var showingDetail = false
-    @StateObject private var locationManager = LocationManager()  // locationManager'ı StateObject olarak başlattık
+    @StateObject private var locationManager = LocationManager()
     @State private var userLocation: UserLocation?
     @State private var showingLocationAlert = false
     @State private var showingSettingsAlert = false
@@ -35,7 +35,6 @@ struct CityMapView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            // Harita
             Map(coordinateRegion: $region, showsUserLocation: true, annotationItems: sortedLocations()) { location in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(
                     latitude: location.coordinates.lat,
@@ -75,7 +74,6 @@ struct CityMapView: View {
                     }
             )
 
-            // Üstteki başlık
             HStack {
                 Button {
                     dismiss()
@@ -99,7 +97,6 @@ struct CityMapView: View {
             .padding(.top, 16)
             .background(Color.clear)
 
-            // Konum butonu
             VStack {
                 Spacer()
                 
@@ -122,8 +119,7 @@ struct CityMapView: View {
                     .animation(.spring(), value: buttonOffset)
                 }
                 .padding(.bottom, 20)
-                
-                // Konumlar listesi
+
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 16) {
                         ForEach(sortedLocations()) { location in
@@ -149,6 +145,7 @@ struct CityMapView: View {
                     )
                 }
             }
+            self.userLocation = newLocation
         }
         .alert("Kendi konumunu haritada görmek ister misin?", isPresented: $showingLocationAlert) {
             Button("Evet") {
@@ -199,7 +196,6 @@ struct CityMapView: View {
     }
 
     private func sortedLocations() -> [CityLocation] {
-        // Eğer kullanıcı konumunu paylaştıysa, yakınlığa göre sıralama yapılır
         guard let userLocation = locationManager.userLocation else {
             return city.locations
         }
@@ -216,4 +212,3 @@ struct CityMapView: View {
         }
     }
 }
-
