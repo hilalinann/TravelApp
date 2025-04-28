@@ -46,40 +46,29 @@ class LocationViewModel: ObservableObject {
     
     func fetchLocations() async {
         guard !isLoading else {
-            print("🔄 LocationViewModel: Zaten yükleme yapılıyor, yeni istek atlanıyor")
             return
         }
-        print("🔵 LocationViewModel: fetchLocations başlatılıyor - Sayfa: \(currentPage)")
         
         isLoading = true
         error = nil
         
         do {
-            print("🔵 LocationViewModel: API çağrısı yapılıyor")
             let response = try await APIService.shared.fetchLocations(page: currentPage)
-            print("✅ LocationViewModel: API yanıtı alındı - \(response.data.count) şehir")
             
             if currentPage == 1 {
-                print("🔵 LocationViewModel: İlk sayfa, şehirler sıfırlanıyor")
                 cities = response.data
             } else {
-                print("🔵 LocationViewModel: Mevcut şehirlere ekleme yapılıyor")
                 cities.append(contentsOf: response.data)
             }
-            
-            print("📊 LocationViewModel: Toplam şehir sayısı: \(cities.count)")
-            print("📊 LocationViewModel: Mevcut sayfa: \(response.currentPage), Toplam sayfa: \(response.totalPages)")
             
             currentPage = response.currentPage
             totalPages = response.totalPages
             error = nil
         } catch {
-            print("❌ LocationViewModel: Hata oluştu - \(error.localizedDescription)")
             self.error = error
         }
         
         isLoading = false
-        print("🔵 LocationViewModel: fetchLocations tamamlandı")
     }
     
     func loadMoreIfNeeded(currentCity: City) {

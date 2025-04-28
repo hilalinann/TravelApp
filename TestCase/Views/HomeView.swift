@@ -108,7 +108,7 @@ struct LocationRow: View {
     @State private var showingDetail = false
     
     var body: some View {
-        HStack(spacing: 12) { // spacing ekledik
+        HStack(spacing: 12) { 
             Button {
                 showingDetail = true
             } label: {

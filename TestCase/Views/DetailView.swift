@@ -43,7 +43,6 @@ struct DetailView: View {
                 
                 ScrollView {
                     VStack(spacing: 0) {
-                        // Location image
                         if let imageUrl = location.image {
                             AsyncImage(url: URL(string: imageUrl)) { image in
                                 image
@@ -62,7 +61,6 @@ struct DetailView: View {
                             .padding(.top, 120)
                         }
                         
-                        // Description
                         Text(location.description)
                             .font(.system(size: 16))
                             .foregroundColor(Theme.textColor)
