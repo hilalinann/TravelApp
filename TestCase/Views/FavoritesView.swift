@@ -2,15 +2,13 @@ import SwiftUI
 
 struct FavoritesView: View {
     @ObservedObject var viewModel: LocationViewModel
-    @Environment(\.presentationMode) var presentationMode  // Bu, geri gitmeyi sağlar.
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack {
-            // Custom navigation bar
             HStack {
                 Button(action: {
-                    // Geri gitmek için işlem yapılacak
-                    presentationMode.wrappedValue.dismiss()  // Bu, favoriler sayfasından çıkıp anasayfaya dönecek
+                    presentationMode.wrappedValue.dismiss()
                 }) {
                     Image(systemName: "chevron.left")
                         .foregroundColor(Theme.textColor)
@@ -34,9 +32,7 @@ struct FavoritesView: View {
             .background(Theme.navigationBarBackgroundColor)
             .shadow(color: Theme.shadowColor, radius: 3, y: 1)
             
-            // Favori konumları listele veya mesaj göster
             if viewModel.getFavoriteLocations().isEmpty {
-                // Eğer favori konum yoksa, mesaj göster
                 Text("Henüz hiçbir konumu favorilere eklemedin.")
                     .font(.system(size: 18, weight: .medium))
                     .foregroundColor(Theme.secondaryTextColor)
@@ -44,7 +40,6 @@ struct FavoritesView: View {
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                // Favori konumları listele
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(viewModel.getFavoriteLocations(), id: \.id) { location in
@@ -55,8 +50,8 @@ struct FavoritesView: View {
                 }
             }
         }
-        .navigationBarBackButtonHidden(true) // Varsayılan geri tuşunu gizle
-        .navigationBarHidden(true)           // Başka navigation bar'ı gizle
+        .navigationBarBackButtonHidden(true)
+        .navigationBarHidden(true)           
         .background(Theme.backgroundColor)
     }
 }

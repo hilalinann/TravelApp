@@ -10,7 +10,6 @@ struct DetailView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             VStack(spacing: 0) {
-                // Custom navigation bar
                 HStack {
                     Button {
                         dismiss()
@@ -79,7 +78,6 @@ struct DetailView: View {
             }
             .background(Theme.backgroundColor)
             
-            // Map button - Fixed at bottom
             VStack {
                 Button {
                     showMap = true
@@ -106,9 +104,7 @@ struct DetailView: View {
             LocationMapView(location: location)
         }
         .onAppear {
-            // Görsel veya içerik yüklemesi tamamlandığında yapılacak işlemler
             if location.image == nil {
-                // Eğer resim yoksa, uygun bir placeholder veya varsayılan resim gösterilebilir.
             }
         }
     }

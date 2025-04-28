@@ -8,7 +8,6 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Custom navigation bar
                 HStack {
                     Text("Önemli Konumlar")
                         .font(.system(size: 20, weight: .semibold))
@@ -26,7 +25,6 @@ struct HomeView: View {
                 .background(Theme.navigationBarBackgroundColor)
                 .shadow(color: Theme.shadowColor, radius: 3, y: 1)
                 
-                // City list
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(viewModel.cities) { city in
@@ -58,7 +56,6 @@ struct CityRow: View {
     
     var body: some View {
         VStack(spacing: 8) {
-            // City header button
             Button {
                 if !city.locations.isEmpty {
                     withAnimation {
@@ -92,7 +89,6 @@ struct CityRow: View {
                 .shadow(color: Theme.shadowColor, radius: 2, x: 0, y: 1)
             }
             
-            // Locations
             if expandedCityId == city.id {
                 VStack(spacing: 8) {
                     ForEach(city.locations) { location in
@@ -144,6 +140,3 @@ struct LocationRow: View {
     }
 }
 
-#Preview {
-    HomeView(viewModel: LocationViewModel())
-} 

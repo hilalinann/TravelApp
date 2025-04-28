@@ -8,10 +8,10 @@ class APIService {
     
     func fetchLocations(page: Int) async throws -> CityLocationResponse {
         let urlString = "\(baseURL)-\(page).json"
-        print("📡 Fetching from URL: \(urlString)")
+        print("Fetching from URL: \(urlString)")
         
         guard let url = URL(string: urlString) else {
-            print("❌ Invalid URL: \(urlString)")
+            print("Invalid URL: \(urlString)")
             throw URLError(.badURL)
         }
         
@@ -19,27 +19,27 @@ class APIService {
             let (data, response) = try await URLSession.shared.data(from: url)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("❌ Invalid response type")
+                print("Invalid response type")
                 throw URLError(.badServerResponse)
             }
             
-            print("📥 Response status code: \(httpResponse.statusCode)")
+            print("Response status code: \(httpResponse.statusCode)")
             
             if let responseString = String(data: data, encoding: .utf8) {
-                print("📦 Raw response: \(responseString)")
+                print("Raw response: \(responseString)")
             }
             
             if httpResponse.statusCode == 200 {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(CityLocationResponse.self, from: data)
-                print("✅ Successfully decoded response with \(response.data.count) cities")
+                print("Successfully decoded response with \(response.data.count) cities")
                 return response
             } else {
-                print("❌ Server error: \(httpResponse.statusCode)")
+                print("Server error: \(httpResponse.statusCode)")
                 throw URLError(.badServerResponse)
             }
         } catch {
-            print("❌ Network or decoding error: \(error)")
+            print("Network or decoding error: \(error)")
             throw error
         }
     }
