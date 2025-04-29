@@ -115,7 +115,7 @@ struct LocationRow: View {
                 Text(location.name)
                     .foregroundColor(Theme.textColor)
                     .font(.system(size: 14))
-                    .frame(maxWidth: .infinity, alignment: .leading) // yazıyı sola hizaladık
+                    .frame(maxWidth: .infinity, alignment: .leading) 
                     .padding()
                     .background(Theme.cardBackgroundColor)
                     .cornerRadius(10)
@@ -127,7 +127,7 @@ struct LocationRow: View {
             } label: {
                 Image(systemName: viewModel.isFavorite(locationId: location.id) ? "heart.fill" : "heart")
                     .foregroundColor(Theme.favoriteColor)
-                    .font(.system(size: 16)) // İstersen biraz büyütebilirsin
+                    .font(.system(size: 16))
             }
         }
         .padding(.horizontal)
